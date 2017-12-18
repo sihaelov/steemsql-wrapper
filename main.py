@@ -52,7 +52,7 @@ async def api_run_sql(request):
 
 app = web.Application()
 app.router.add_get('/', index)
-app.router.add_post('/', api_run_sql)
+app.router.add_post('/api', api_run_sql)
 
 # ~/Projects/steemit/sql/aio
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

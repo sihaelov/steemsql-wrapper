@@ -224,7 +224,7 @@
                     query: editor.getDoc().getValue(),
                 }
 
-                $.post('/', ajax_data, function(data){
+                $.post('/api', ajax_data, function(data){
                     var headers = data['headers'];
                     var rows = JSON.parse(data['rows']);
                     if(data['error']){
