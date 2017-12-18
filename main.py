@@ -10,6 +10,7 @@ except ModuleNotFoundError:
 import os
 import json
 from datetime import datetime, date
+import functools
 
 
 async def index(request):
@@ -32,22 +33,24 @@ async def api_run_sql(request):
         # connection.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
         # connection.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-8')
         error = None
-        results = []
+        rows = []
         try:
             rows_raw = cursor.execute(sql_query).fetchmany(5000)
             headers = [header[0] for header in cursor.description]
 
             for row in rows_raw:
-                results.append(dict(zip(headers, row)))
+                rows.append(dict(zip(headers, row)))
 
         except Exception as e:
             print('Error')
             error = str(e)
             headers = []
 
-    rows_json = json.dumps(results, default=str)
-    return web.json_response({'headers': headers, 'rows': rows_json,
-                              'error': error})
+    return web.json_response({
+                              'headers': headers,
+                              'rows': rows,
+                              'error': error
+                        }, dumps=functools.partial(json.dumps, default=str))
 
 
 app = web.Application()

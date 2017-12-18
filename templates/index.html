@@ -226,7 +226,8 @@
 
                 $.post('/api', ajax_data, function(data){
                     var headers = data['headers'];
-                    var rows = JSON.parse(data['rows']);
+                    var rows = data['rows'];
+
                     if(data['error']){
                         $('.sql-editor').removeClass('isloading');
                         Materialize.toast('Error! ' + data['error'], 8000);
