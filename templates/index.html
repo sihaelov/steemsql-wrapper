@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>SteemSQL Wrapper</title>
+    <meta property="title" content="SteemSQL Wrapper" />
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
+    <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Space+Mono" rel="stylesheet">
+
+    <link rel="stylesheet" href="/static/style.css">
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-64063502-12"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-64063502-12');
+</script>
+
+</head>
+
+
+<body style="/*background: #f1f5f9; background-color: #e8ebef;*/
+            background-color: rgb(250, 250, 250); margin-bottom: 100px;">
+
+    <div class="sql-editor">
+    
+        <div class="sql-editor__header">
+            <div class="sql-editor__info-text">
+                <p>Based on <a href="http://steemsql.com" target="_blank">SteemSQL</a></p>
+                <p>Developed by <a href="https://steemit.com/@emptyname" target="_blank">@emptyname</a></p>
+                <p><a href="https://www.w3schools.com/sql/default.asp" target="_blank">Learn SQL</a></p>
+            </div>
+
+            <div class="undo-redo right-align">
+                <i class="undo material-icons">&#xE166;</i> <!-- undo -->
+                <i class="redo material-icons">&#xE15A;</i> <!-- redo -->
+            </div>
+        </div>
+
+        <div class="input-field">
+
+            <textarea id="sqlarea" class="materialize-textarea"></textarea>
+
+            <div class="loader-wrapper valign-wrapper">
+                <div class="preloader-wrapper big active">
+                    <div class="spinner-layer spinner-blue-only">
+                      <div class="circle-clipper left">
+                        <div class="circle"></div>
+                      </div><div class="gap-patch">
+                        <div class="circle"></div>
+                      </div><div class="circle-clipper right">
+                        <div class="circle"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-align">
+            <a href="#" class="run-query-btn">Run Query</a>
+        </div>
+    
+        <div class="example-list" style="margin-top: 50px;">
+        
+            <div class="card valign-wrapper orange lighten-1">
+                <p class="title">
+                    Тоp 30 posts by number of upvotes
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, net_votes, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY net_votes DESC"></p>
+            </div>
+
+            <div class="card valign-wrapper deep-orange lighten-1">
+                <p class="title">
+                    Top 30 posts by number of comments
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, children, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY children DESC"></p>
+            </div>
+
+            <div class="card valign-wrapper green lighten-1">
+                <p class="title">
+                    Top 30 posts by pending payout
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, pending_payout_value, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY pending_payout_value DESC"></p>
+            </div>
+
+            <div class="card valign-wrapper blue lighten-1">
+                <p class="title">
+                    Daily number of posts
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+            
+                <p class="raw-sql" sql="SELECT CONVERT(DATE, created) as Date, COUNT(*) as Posts&#10;FROM Comments&#10;WHERE created >= '${dateWeekAgo}' AND created < '${date}'&#10;GROUP BY CONVERT(DATE, created)&#10;ORDER BY CONVERT(DATE, created) DESC"></p>
+
+            </div>
+
+            <div class="card valign-wrapper purple lighten-1">
+                <p class="title">
+                    Daily number of new accounts
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+                <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as [New Accounts]&#10;FROM TxAccountCreates&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
+            </div>
+
+            <div class="card valign-wrapper indigo lighten-1">
+                <p class="title">
+                    Daily number of votes
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+                <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as Votes&#10;FROM TxVotes&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
+            </div>
+
+            <div class="card valign-wrapper red lighten-1">
+                <p class="title">
+                    Top 50 utopian contributors by pending payout
+                </p>
+                <div class="overlay valign-wrapper"><p>See query</p></div>
+                <p class="raw-sql" sql="SELECT TOP 50 author, SUM(pending_payout_value) as [Pending Payout]&#10;FROM Comments&#10;WHERE&#10;    parent_author='' AND&#10;    created >= '${dateWeekAgo}' AND&#10;    created < '${date}' AND&#10;    category='utopian-io'&#10;GROUP BY author&#10;ORDER BY SUM(pending_payout_value) DESC"></p>
+            </div>
+
+            <!--
+                SELECT * FROM sys.views
+                select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='tableName'
+            
+                SELECT CONVERT(DATE, created), SUM(net_votes)
+                FROM Comments
+                WHERE created >= '2017/12/06' AND created < '2017/12/07'
+                GROUP BY CONVERT(DATE, created)
+                ORDER BY CONVERT(DATE, created)
+            -->
+
+        </div> <!--/.example-list -->
+    </div>
+
+    <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;">
+        <table class="bordered highlight responsive-table">
+            <thead></thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/static/codemirror/lib/codemirror.js"></script>
+    <script src="/static/codemirror/mode/sql/sql.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+
+    <!--
+    <script src="/static/codemirror/addon/display/placeholder.js"></script>
+    -->
+
+    <script type="text/javascript">
+
+        $(window).on('load', function(){
+
+            var textArea = document.getElementById('sqlarea');
+            var editor = CodeMirror.fromTextArea(textArea, {
+                mode: 'text/x-mssql',
+                // indentWithTabs: true,
+                lineNumbers: true,
+
+            });
+
+            $('i.undo').click(function(){
+                if( !$('.sql-editor').hasClass('isloading')){
+                    editor.getDoc().undo();
+                }
+            });
+            $('i.redo').click(function(){
+                if( !$('.sql-editor').hasClass('isloading')){
+                    editor.getDoc().redo();
+                }
+            });
+
+
+            $('.example-list > .card').click(function() {
+                if( !$('.sql-editor').hasClass('isloading')){
+                    // var rawSql = $(this).children('.raw-sql').text().replace('\n', '');
+                    var currrentDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
+                    
+                    var nextDateRaw = new Date();
+                    nextDateRaw.setDate(nextDateRaw.getDate() + 1);
+                    var nextDate = nextDateRaw.toJSON().slice(0,10).replace(/-/g,'/');
+                    
+                    var dateWeekAgoRaw = new Date();
+                    dateWeekAgoRaw.setDate(dateWeekAgoRaw.getDate() - 7);
+                    var dateWeekAgo = dateWeekAgoRaw.toJSON().slice(0,10).replace(/-/g,'/');
+
+                    var rawSql = $(this).children('.raw-sql').attr('sql');
+                    rawSql = rawSql.replace('${date}', currrentDate);
+                    rawSql = rawSql.replace('${nextDate}', nextDate);
+                    rawSql = rawSql.replace('${dateWeekAgo}', dateWeekAgo);
+                    editor.getDoc().setValue(rawSql);
+                }
+            });
+
+            $('.run-query-btn').click(function(e) {
+                e.preventDefault();
+                if($('.sql-editor').hasClass('isloading')){
+                    alert('Please wait results of the first request.');
+                    return;
+                }
+
+                if( !editor.getDoc().getValue()){
+                    return;
+                }
+
+                console.log('start');
+                $('.sql-editor').addClass('isloading');
+
+                const ajax_data = {
+                    sql: editor.getDoc().getValue(),
+                }
+
+                $.post('/query/', ajax_data, function(data){
+                    var headers = data['headers'];
+                    var rows = JSON.parse(data['rows']);
+                    if(data['error']){
+                        $('.sql-editor').removeClass('isloading');
+                        Materialize.toast('Error! ' + data['error'], 8000);
+                        return;
+                    }
+                    else if( !headers.length && !rows.length){
+                        $('.sql-editor').removeClass('isloading');
+                        Materialize.toast('No results!', 4000);
+                        return;
+                    }
+                    console.log('continue');
+
+                    var $header = $('<tr></tr>');
+                    headers.forEach(function(title_str) {
+                        var $title = $('<th>' + title_str + '</th>');
+                        $header.append($title);
+                    });
+                    $('table > thead').html($header);
+
+                    $('table > tbody').html('');
+                    rows.forEach(function(row) {
+                        var $tableRow = $('<tr></tr>');
+                        row.forEach(function(cell) {
+                            var $tableCell = $('<td>' + cell + '</td>');
+                            $tableRow.append($tableCell);
+                        });
+                        $('table > tbody').append($tableRow);
+                    });
+
+                    $('.sql-editor').removeClass('isloading');
+                })
+                    .fail(function(data) {
+                        $('.sql-editor').removeClass('isloading');
+                        Materialize.toast('Error!', 8000);
+                    });
+            })
+
+
+        });
+
+
+
+
+    </script>
+
+
+
+</body>
+</html>

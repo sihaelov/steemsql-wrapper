@@ -1,0 +1,12 @@
+aiodns==1.1.1
+aiohttp==2.3.6
+aiohttp-jinja2==0.14.0
+async-timeout==2.0.0
+cchardet==2.1.1
+chardet==3.0.4
+Jinja2==2.10
+MarkupSafe==1.0
+multidict==3.3.2
+pycares==2.3.0
+-e git+https://github.com/jiangwen365/pypyodbc.git@fe86a8a4c9772634da1ede741092a1c6daaf5b8f#egg=pypyodbc
+yarl==0.15.0

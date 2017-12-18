@@ -1,0 +1,206 @@
+
+.CodeMirror{
+    border-radius: 5px;
+
+    /* z-depth-3 */
+    box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12), 0 3px 5px -1px rgba(0,0,0,0.3);
+}
+
+.CodeMirror-gutters{
+	background-color: #fff;
+	border: none;
+}
+
+.CodeMirror-linenumber{
+    min-width: 10px;
+
+    /* font-size: 10px; */
+    /* Line-height = code's font-size */
+    /* line-height: 15px; */
+
+    font-size: 13px;
+    line-height: 22px;
+}
+
+/* .CodeMirror pre.CodeMirror-placeholder { color: #999; } */
+
+
+.run-query-btn{
+    margin-top: 20px;
+    background-color: #00bcd4;
+    color: rgba(255,255,255,.9);
+
+    /* box-shadow: 0px 3px 15px 0 #47b4b8; */
+    box-shadow: 3px 2px 15px 0 #47b4b8;
+
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    display: inline-block;
+
+    /* transition: box-shadow .3s,background-color .3s; */
+    transition: .1s;
+}
+
+.run-query-btn:hover,
+.sql-editor.isloading .run-query-btn{
+    /* box-shadow: 0 10px 92px 0 #73c6c9; */
+
+    transform: translateY(-1px);
+    background-color: #00bcd4d1;
+
+    /* box-shadow: 3px 2px 20px 0 #47b4b8; */
+    box-shadow: 3px 2px 5px 0 #47b4b8;
+}
+.sql-editor.isloading .run-query-btn{
+    background-color: #007e8ed1;
+}
+
+.sql-editor{
+    /* max-width: 500px; */
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 100px;
+    padding: 0 20px;
+}
+
+.sql-editor__header{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.sql-editor__info-text{
+    opacity: 0.8;
+    display: flex;
+}
+.sql-editor__info-text > p{
+    display: inline-block;
+    margin: 0;
+}
+.sql-editor__info-text > p:not(:last-child):after{
+    content: '|';
+    margin: 0 7px;
+}
+
+@media screen and (max-width: 450px) {
+    .sql-editor__info-text > p{
+        display: block;
+        margin: 5px 0;
+    }
+    .sql-editor__info-text{
+        display: block;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .sql-editor__header{
+        display: block;
+    }
+
+    .sql-editor__info-text > p:not(:last-child):after{
+        display: none;
+    }
+}
+
+.sql-editor .undo-redo i{
+    color: rgba(0, 0, 0, 0.6);
+}
+.sql-editor:not(.isloading) .undo-redo i:hover{
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.sql-editor .input-field{
+    margin-top: 0;
+}
+
+.sql-editor .loader-wrapper{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    background: rgba(0, 0, 0, 0.6);
+    /* opacity: 0.5; */
+    z-index: 5;
+
+    display: none;
+}
+.sql-editor .loader-wrapper > .preloader-wrapper{
+    margin: auto; 
+}
+
+.sql-editor.isloading .loader-wrapper{
+    display: flex;
+}
+.sql-editor.isloading .CodeMirror-hscrollbar{
+    display: none !important;
+}
+
+.example-list{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.example-list .card{
+    position: relative;
+    width: 200px;
+    padding: 0 10px;
+    height: 120px;
+
+    border-radius: 7px;
+    margin-right: 20px;
+    text-align: center;
+
+    /* font-weight: 600; */
+    font-size: 16px;
+    line-height: 1.7;
+    color: #fff;
+    font-family: Space Mono, monospace;
+    /* text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+
+    box-shadow: 3px 5px 20px rgba(0,0,0,.22);
+    transition: 0.1s;
+}
+
+.example-list .card > .overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 7px; /* from .card*/
+
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+.example-list .card > .overlay > p{
+    margin: auto;
+
+    border-radius: 20px;
+    padding: 5px 20px;
+
+    /* from .run-query-btn */
+    background-color: #00bcd4;
+    /* border-radius: 5px; */
+    text-transform: uppercase;
+}
+
+.example-list .card > p.raw-sql{
+    display: none;
+}
+
+.sql-editor:not(.isloading) .example-list .card:hover{
+    transform: translateY(-1px);
+    /* box-shadow: 3px 5px 10px rgba(0,0,0,.22); */
+    box-shadow: 3px 2px 5px rgba(0,0,0,.22);
+    cursor: pointer;
+}
+.sql-editor:not(.isloading) .example-list .card:hover > .overlay{
+    visibility: visible;
+    opacity: 1;
+}
+
