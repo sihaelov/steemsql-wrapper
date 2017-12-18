@@ -218,14 +218,13 @@
                     return;
                 }
 
-                console.log('start');
                 $('.sql-editor').addClass('isloading');
 
-                const ajax_data = {
-                    sql: editor.getDoc().getValue(),
+                var ajax_data = {
+                    query: editor.getDoc().getValue(),
                 }
 
-                $.post('/query/', ajax_data, function(data){
+                $.post('/', ajax_data, function(data){
                     var headers = data['headers'];
                     var rows = JSON.parse(data['rows']);
                     if(data['error']){
@@ -238,7 +237,6 @@
                         Materialize.toast('No results!', 4000);
                         return;
                     }
-                    console.log('continue');
 
                     var $header = $('<tr></tr>');
                     headers.forEach(function(title_str) {
@@ -250,12 +248,15 @@
                     $('table > tbody').html('');
                     rows.forEach(function(row) {
                         var $tableRow = $('<tr></tr>');
-                        row.forEach(function(cell) {
-                            var $tableCell = $('<td>' + cell + '</td>');
+
+                        headers.forEach(function(title_str) {
+                            var $tableCell = $('<td>' + row[title_str] + '</td>');
                             $tableRow.append($tableCell);
                         });
+
                         $('table > tbody').append($tableRow);
                     });
+
 
                     $('.sql-editor').removeClass('isloading');
                 })
