@@ -7,6 +7,8 @@ try:
 except ModuleNotFoundError:
     import pypyodbc as pyodbc
 
+import tablib
+
 import os
 import json
 from datetime import datetime, date
@@ -53,9 +55,29 @@ async def api_run_sql(request):
                         }, dumps=functools.partial(json.dumps, default=str))
 
 
+async def sql_export(request):
+    data = await request.json()
+    export_format = data.get('export_format')
+    table = data.get('table')
+
+    if not export_format:
+        return web.json_response({'result': None, 'error': "Empty table"})
+
+    tablib_dataset = tablib.Dataset()
+    tablib_dataset.headers = table['headers']
+
+    for row in table['rows']:
+        row_values = list(map(row.get, table['headers']))
+        tablib_dataset.append(row_values)
+
+    # if export_format == 'markdown':
+    return web.json_response({'result': str(tablib_dataset), 'error': None})
+
+
 app = web.Application()
 app.router.add_get('/', index)
 app.router.add_post('/api', api_run_sql)
+app.router.add_post('/export', sql_export)
 
 # ~/Projects/steemit/sql/aio
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

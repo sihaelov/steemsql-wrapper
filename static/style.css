@@ -25,7 +25,7 @@
 /* .CodeMirror pre.CodeMirror-placeholder { color: #999; } */
 
 
-.run-query-btn{
+.button{
     margin-top: 20px;
     background-color: #00bcd4;
     color: rgba(255,255,255,.9);
@@ -42,8 +42,12 @@
     transition: .1s;
 }
 
-.run-query-btn:hover,
-.sql-editor.isloading .run-query-btn{
+.button:hover{
+    cursor: pointer;
+}
+
+body.isloading .button,
+.run-query-btn:hover{
     /* box-shadow: 0 10px 92px 0 #73c6c9; */
 
     transform: translateY(-1px);
@@ -52,8 +56,68 @@
     /* box-shadow: 3px 2px 20px 0 #47b4b8; */
     box-shadow: 3px 2px 5px 0 #47b4b8;
 }
-.sql-editor.isloading .run-query-btn{
+body.isloading .sql-editor .run-query-btn{
     background-color: #007e8ed1;
+}
+
+.export-wrapper{
+    height: 50px;
+    position: relative;
+}
+
+.export{
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    transition: .15s;
+}
+
+.export .button{
+    margin: 0;
+    padding: 10px 30px;
+}
+
+body:not(.isloading) .export:hover{
+    box-shadow: 3px 2px 5px 0 #47b4b8;
+}
+
+body:not(.isloading) .export:hover .button{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: none;
+    background-color: #00bcd4d1;
+}
+
+.export .export-options{
+    background: #fff;
+    opacity: 0.1;
+    visibility: hidden;
+    height: 0;
+    transition: .15s;
+}
+
+body:not(.isloading) .export:hover .export-options{
+    height: 100%;
+    opacity: 1;
+    visibility: visible;
+}
+
+.export .export-options > div{
+    /* padding: 10px 20px; */
+    padding: 10px 0;
+}
+
+.export .export-options > div:first-child{
+    border-bottom: 1px solid #eee;
+}
+
+.export .export-options > div:last-child{
+    color: rgba(0, 0, 0, 0.3);
+}
+
+.export .export-options > div:first-child:hover{
+    background-color: #eee;
+    cursor: pointer;
 }
 
 .sql-editor{
@@ -106,7 +170,7 @@
 .sql-editor .undo-redo i{
     color: rgba(0, 0, 0, 0.6);
 }
-.sql-editor:not(.isloading) .undo-redo i:hover{
+body:not(.isloading) .sql-editor .undo-redo i:hover{
     background-color: #eee;
     cursor: pointer;
 }
@@ -130,10 +194,10 @@
     margin: auto; 
 }
 
-.sql-editor.isloading .loader-wrapper{
+body.isloading .sql-editor .loader-wrapper{
     display: flex;
 }
-.sql-editor.isloading .CodeMirror-hscrollbar{
+body.isloading .sql-editor .CodeMirror-hscrollbar{
     display: none !important;
 }
 
@@ -193,13 +257,13 @@
     display: none;
 }
 
-.sql-editor:not(.isloading) .example-list .card:hover{
+body:not(.isloading) .example-list .card:hover{
     transform: translateY(-1px);
     /* box-shadow: 3px 5px 10px rgba(0,0,0,.22); */
     box-shadow: 3px 2px 5px rgba(0,0,0,.22);
     cursor: pointer;
 }
-.sql-editor:not(.isloading) .example-list .card:hover > .overlay{
+body:not(.isloading) .example-list .card:hover > .overlay{
     visibility: visible;
     opacity: 1;
 }

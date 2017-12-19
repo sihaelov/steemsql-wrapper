@@ -68,7 +68,7 @@
         </div>
 
         <div class="right-align">
-            <a href="#" class="run-query-btn">Run Query</a>
+            <a href="#" class="run-query-btn button">Run Query</a>
         </div>
     
         <div class="example-list" style="margin-top: 50px;">
@@ -145,7 +145,21 @@
         </div> <!--/.example-list -->
     </div>
 
-    <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;">
+    <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;
+    margin-bottom: 300px;">
+        
+        <div class="export-wrapper" style="display: none;">
+            <div class="export">
+                <div class="button">Export</div>
+
+                <div class="export-options center-align">
+                    <div id="export-markdown">Markdown</div>
+                    <div id="export-excel">Excel</div>
+                </div>
+            </div>
+        </div>
+
+
         <table class="bordered highlight responsive-table">
             <thead></thead>
             <tbody></tbody>
@@ -166,6 +180,8 @@
 
         $(window).on('load', function(){
 
+            var currentDataTable;
+
             var textArea = document.getElementById('sqlarea');
             var editor = CodeMirror.fromTextArea(textArea, {
                 mode: 'text/x-mssql',
@@ -175,19 +191,19 @@
             });
 
             $('i.undo').click(function(){
-                if( !$('.sql-editor').hasClass('isloading')){
+                if( !$('body').hasClass('isloading')){
                     editor.getDoc().undo();
                 }
             });
             $('i.redo').click(function(){
-                if( !$('.sql-editor').hasClass('isloading')){
+                if( !$('body').hasClass('isloading')){
                     editor.getDoc().redo();
                 }
             });
 
 
             $('.example-list > .card').click(function() {
-                if( !$('.sql-editor').hasClass('isloading')){
+                if( !$('body').hasClass('isloading')){
                     // var rawSql = $(this).children('.raw-sql').text().replace('\n', '');
                     var currrentDate = new Date().toJSON().slice(0,10).replace(/-/g,'/');
                     
@@ -207,9 +223,34 @@
                 }
             });
 
+            $('#export-markdown').click(function() {
+                var ajax_data = {
+                    export_format: 'markdown',
+                    table: currentDataTable,
+                }
+
+                $.ajax({
+                    url: '/export',
+                    type: 'POST',
+                    data: JSON.stringify(ajax_data),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                })
+                    .done(function(data) {
+                        var markdownText = "<pre>" + data['result'] + "</pre>";
+                        var markdownWindow = window.open("about:blank", "markdown", "_blank");
+                        if(markdownWindow){
+                            markdownWindow.document.write(markdownText);
+                        }
+                    })
+                    .fail(function(data) {
+                        Materialize.toast('Error!', 4000);
+                    });
+            });
+
             $('.run-query-btn').click(function(e) {
                 e.preventDefault();
-                if($('.sql-editor').hasClass('isloading')){
+                if($('body').hasClass('isloading')){
                     alert('Please wait results of the first request.');
                     return;
                 }
@@ -218,7 +259,7 @@
                     return;
                 }
 
-                $('.sql-editor').addClass('isloading');
+                $('body').addClass('isloading');
 
                 var ajax_data = {
                     query: editor.getDoc().getValue(),
@@ -229,12 +270,12 @@
                     var rows = data['rows'];
 
                     if(data['error']){
-                        $('.sql-editor').removeClass('isloading');
+                        $('body').removeClass('isloading');
                         Materialize.toast('Error! ' + data['error'], 8000);
                         return;
                     }
                     else if( !headers.length && !rows.length){
-                        $('.sql-editor').removeClass('isloading');
+                        $('body').removeClass('isloading');
                         Materialize.toast('No results!', 4000);
                         return;
                     }
@@ -258,12 +299,14 @@
                         $('table > tbody').append($tableRow);
                     });
 
+                    $('.export-wrapper').css('display', 'block');
+                    currentDataTable = data;
 
-                    $('.sql-editor').removeClass('isloading');
+                    $('body').removeClass('isloading');
                 })
                     .fail(function(data) {
-                        $('.sql-editor').removeClass('isloading');
-                        Materialize.toast('Error!', 8000);
+                        $('body').removeClass('isloading');
+                        Materialize.toast('Error!', 4000);
                     });
             })
 
