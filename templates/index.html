@@ -8,8 +8,10 @@
     <title>SteemSQL Wrapper</title>
     <meta property="title" content="SteemSQL Wrapper" />
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <link rel="stylesheet" href="/static/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="/static/materialize_noUiSlider/nouislider.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css">
 
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -67,11 +69,22 @@
             </div>
         </div>
 
-        <div class="right-align">
-            <a href="#" class="run-query-btn button">Run Query</a>
+        <div class="sql-editor__footer">
+            <div class="card limit-rows">
+                <div class="limit-rows__header">
+                    <p>Limit Rows</p>
+                    <input type="number" min="1" max="5000" id="limit-rows-value" />
+                </div>
+
+                <div id="limit-rows-slider"></div>
+            </div>
+
+            <div>
+                <a href="#" class="run-query-btn button">Run Query</a>
+            </div>
         </div>
-    
-        <div class="example-list" style="margin-top: 50px;">
+
+        <div class="example-list">
         
             <div class="card valign-wrapper orange lighten-1">
                 <p class="title">
@@ -145,8 +158,7 @@
         </div> <!--/.example-list -->
     </div>
 
-    <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;
-    margin-bottom: 300px;">
+    <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;">
         
         <div class="export-wrapper" style="display: none;">
             <div class="export">
@@ -170,7 +182,10 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="/static/codemirror/lib/codemirror.js"></script>
     <script src="/static/codemirror/mode/sql/sql.js"></script>
+
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
+    <script src="/static/materialize_noUiSlider/nouislider.min.js"></script>
 
     <!--
     <script src="/static/codemirror/addon/display/placeholder.js"></script>
@@ -187,7 +202,32 @@
                 mode: 'text/x-mssql',
                 // indentWithTabs: true,
                 lineNumbers: true,
+            });
 
+            var slider = document.getElementById('limit-rows-slider');
+            var initialSliderValue = 500;
+            noUiSlider.create(slider, {
+                start: [initialSliderValue],
+                connect: true,
+                step: 1,
+                orientation: 'horizontal', // 'horizontal' or 'vertical'
+                range: {
+                    'min': 1,
+                    'max': 5000
+                },
+                format: wNumb({
+                    decimals: 0
+               })
+            });
+            var $sliderValue = $('#limit-rows-value');
+            $sliderValue.val(initialSliderValue);
+
+            slider.noUiSlider.on('update', function(values, handle) {
+                $sliderValue.val(values[handle]);
+            });
+
+            $('#limit-rows-value').change(function() {
+                slider.noUiSlider.set($(this).val());
             });
 
             $('i.undo').click(function(){
@@ -263,57 +303,63 @@
 
                 var ajax_data = {
                     query: editor.getDoc().getValue(),
+                    limit_rows: parseInt($('#limit-rows-value').val())
                 }
 
-                $.post('/api', ajax_data, function(data){
-                    var headers = data['headers'];
-                    var rows = data['rows'];
+                $.ajax({
+                    url: '/api',
+                    type: 'POST',
+                    data: JSON.stringify(ajax_data),
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json'
+                })
+                    .done(function(data) {
+                        var headers = data['headers'];
+                        var rows = data['rows'];
 
-                    if(data['error']){
-                        $('body').removeClass('isloading');
-                        Materialize.toast('Error! ' + data['error'], 8000);
-                        return;
-                    }
-                    else if( !headers.length && !rows.length){
-                        $('body').removeClass('isloading');
-                        Materialize.toast('No results!', 4000);
-                        return;
-                    }
+                        if(data['error']){
+                            $('body').removeClass('isloading');
+                            Materialize.toast('Error! ' + data['error'], 8000);
+                            return;
+                        }
+                        else if( !headers.length && !rows.length){
+                            $('body').removeClass('isloading');
+                            Materialize.toast('No results!', 4000);
+                            return;
+                        }
 
-                    var $header = $('<tr></tr>');
-                    headers.forEach(function(title_str) {
-                        var $title = $('<th>' + title_str + '</th>');
-                        $header.append($title);
-                    });
-                    $('table > thead').html($header);
-
-                    $('table > tbody').html('');
-                    rows.forEach(function(row) {
-                        var $tableRow = $('<tr></tr>');
-
+                        var $header = $('<tr></tr>');
                         headers.forEach(function(title_str) {
-                            var $tableCell = $('<td>' + row[title_str] + '</td>');
-                            $tableRow.append($tableCell);
+                            var $title = $('<th>' + title_str + '</th>');
+                            $header.append($title);
+                        });
+                        $('table > thead').html($header);
+
+                        $('table > tbody').html('');
+                        rows.forEach(function(row) {
+                            var $tableRow = $('<tr></tr>');
+
+                            headers.forEach(function(title_str) {
+                                var $tableCell = $('<td>' + row[title_str] + '</td>');
+                                $tableRow.append($tableCell);
+                            });
+
+                            $('table > tbody').append($tableRow);
                         });
 
-                        $('table > tbody').append($tableRow);
-                    });
+                        $('.export-wrapper').css('display', 'block');
+                        currentDataTable = data;
 
-                    $('.export-wrapper').css('display', 'block');
-                    currentDataTable = data;
-
-                    $('body').removeClass('isloading');
-                })
+                        $('body').removeClass('isloading');
+                    })
                     .fail(function(data) {
                         $('body').removeClass('isloading');
                         Materialize.toast('Error!', 4000);
                     });
-            })
 
+            }); // run-query-btn.click()
 
-        });
-
-
+        }); // $(window).on('load')
 
 
     </script>

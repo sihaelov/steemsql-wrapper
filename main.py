@@ -22,8 +22,19 @@ async def index(request):
 
 async def api_run_sql(request):
 
-    data = await request.post()
+    try:
+        data = await request.json()
+    except json.decoder.JSONDecodeError:
+        data = await request.post()
+
     sql_query = data.get('query')
+    limit_rows = data.get('limit_rows')
+
+    if limit_rows:
+        limit_rows = 5000 if limit_rows > 5000 else limit_rows
+        limit_rows = 0 if limit_rows < 0 else limit_rows
+    else:
+        limit_rows = 5000
 
     if not sql_query:
         return web.json_response({'headers': [], 'rows': [],
@@ -37,7 +48,7 @@ async def api_run_sql(request):
         error = None
         rows = []
         try:
-            rows_raw = cursor.execute(sql_query).fetchmany(5000)
+            rows_raw = cursor.execute(sql_query).fetchmany(limit_rows)
             headers = [header[0] for header in cursor.description]
 
             for row in rows_raw:
