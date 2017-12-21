@@ -1,5 +1,6 @@
 aiodns==1.1.1
 aiohttp==2.3.6
+aiohttp-cors==0.5.3
 aiohttp-jinja2==0.14.0
 async-timeout==2.0.0
 cchardet==2.1.1
@@ -24,6 +25,7 @@ PyYAML==3.12
 requests==2.18.4
 six==1.11.0
 tablib==0.12.1
+typing==3.6.2
 unicodecsv==0.14.1
 urllib3==1.22
 xlrd==1.1.0

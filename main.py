@@ -1,6 +1,7 @@
 from aiohttp import web
 import aiohttp_jinja2
 import jinja2
+import aiohttp_cors
 
 try:
     import pyodbc
@@ -86,9 +87,22 @@ async def sql_export(request):
 
 
 app = web.Application()
+
 app.router.add_get('/', index)
 app.router.add_post('/api', api_run_sql)
 app.router.add_post('/export', sql_export)
+
+cors = aiohttp_cors.setup(app, defaults={
+        "*":  aiohttp_cors.ResourceOptions(
+                expose_headers="*",
+                allow_headers="*",
+                allow_credentials=True
+            ),
+    })
+
+for route in list(app.router.routes()):
+    cors.add(route)
+
 
 # ~/Projects/steemit/sql/aio
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
