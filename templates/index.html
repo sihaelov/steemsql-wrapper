@@ -42,6 +42,7 @@
                 <p>Based on <a href="http://steemsql.com" target="_blank">SteemSQL</a></p>
                 <p>Developed by <a href="https://steemit.com/@emptyname" target="_blank">@emptyname</a></p>
                 <p><a href="https://www.w3schools.com/sql/default.asp" target="_blank">Learn SQL</a></p>
+                <p>Delay: <span id="delay">loading...</span></p>
             </div>
 
             <div class="undo-redo right-align">
@@ -202,6 +203,10 @@
                 mode: 'text/x-mssql',
                 // indentWithTabs: true,
                 lineNumbers: true,
+            });
+
+            $.get('/delay', function(data) {
+                $('#delay').text(data['delay_seconds'] + 's');
             });
 
             var slider = document.getElementById('limit-rows-slider');

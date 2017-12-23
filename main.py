@@ -8,12 +8,15 @@ try:
 except ModuleNotFoundError:
     import pypyodbc as pyodbc
 
+import steem
 import tablib
 
 import os
 import json
 from datetime import datetime, date
 import functools
+
+db_url = 'Driver={ODBC Driver 13 for SQL Server};Server=sql.steemsql.com;Database=DBSteem;uid=steemit;pwd=steemit'
 
 
 async def index(request):
@@ -41,7 +44,6 @@ async def api_run_sql(request):
         return web.json_response({'headers': [], 'rows': [],
                                   'error': "Empty query"})
 
-    db_url = 'Driver={ODBC Driver 13 for SQL Server};Server=sql.steemsql.com;Database=DBSteem;uid=steemit;pwd=steemit'
     with pyodbc.connect(db_url, timeout=60) as connection:
         cursor = connection.cursor()
         # connection.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
@@ -86,11 +88,31 @@ async def sql_export(request):
     return web.json_response({'result': str(tablib_dataset), 'error': None})
 
 
+async def get_delay(request):
+    blockchain = steem.blockchain.Blockchain()
+    steemd = steem.steemd.Steemd()
+
+    sql_query = "SELECT TOP 1 timestamp FROM Blocks WHERE timestamp >= CONVERT(date, GETDATE()) ORDER BY timestamp DESC"
+    with pyodbc.connect(db_url, timeout=60) as connection:
+        cursor = connection.cursor()
+        steemsql_last_date = cursor.execute(sql_query).fetchone()[0]
+
+    current_block_num = blockchain.get_current_block_num()
+    current_block = steemd.get_block_header(current_block_num)
+    blockchain_last_date = datetime.strptime(current_block['timestamp'],
+                                             "%Y-%m-%dT%H:%M:%S")
+
+    delay = blockchain_last_date - steemsql_last_date
+
+    return web.json_response({'delay_seconds': round(delay.total_seconds())})
+
+
 app = web.Application()
 
 app.router.add_get('/', index)
 app.router.add_post('/api', api_run_sql)
 app.router.add_post('/export', sql_export)
+app.router.add_get('/delay', get_delay)
 
 cors = aiohttp_cors.setup(app, defaults={
         "*":  aiohttp_cors.ResourceOptions(
