@@ -92,7 +92,7 @@ async def get_delay(request):
     blockchain = steem.blockchain.Blockchain()
     steemd = steem.steemd.Steemd()
 
-    sql_query = "SELECT TOP 1 timestamp FROM Blocks WHERE timestamp >= CONVERT(date, GETDATE()) ORDER BY timestamp DESC"
+    sql_query = "SELECT TOP 1 timestamp FROM Blocks WHERE timestamp >= CONVERT(date, GETUTCDATE()) ORDER BY timestamp DESC"
     with pyodbc.connect(db_url, timeout=60) as connection:
         cursor = connection.cursor()
         steemsql_last_date = cursor.execute(sql_query).fetchone()[0]

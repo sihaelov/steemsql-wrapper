@@ -206,7 +206,15 @@
             });
 
             $.get('/delay', function(data) {
-                $('#delay').text(data['delay_seconds'] + 's');
+                var delay = data['delay_seconds'];
+                if(delay > 60){
+                    var minutes = Math.floor(delay / 60);
+                    var seconds = delay - minutes * 60;
+                    $('#delay').text(minutes + 'm ' + seconds + 's');
+                }
+                else{
+                    $('#delay').text(delay + 's');
+                }
             });
 
             var slider = document.getElementById('limit-rows-slider');
