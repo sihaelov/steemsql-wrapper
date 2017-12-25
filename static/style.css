@@ -105,15 +105,11 @@ body:not(.isloading) .export:hover .export-options{
     padding: 10px 0;
 }
 
-.export .export-options > div:first-child{
+.export .export-options > div{
     border-bottom: 1px solid #eee;
 }
 
-.export .export-options > div:last-child{
-    color: rgba(0, 0, 0, 0.3);
-}
-
-.export .export-options > div:first-child:hover{
+.export .export-options > div:hover{
     background-color: #eee;
     cursor: pointer;
 }

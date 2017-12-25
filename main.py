@@ -16,6 +16,8 @@ import json
 from datetime import datetime, date
 import functools
 
+
+tablib.formats.json.json = json
 db_url = 'Driver={ODBC Driver 13 for SQL Server};Server=sql.steemsql.com;Database=DBSteem;uid=steemit;pwd=steemit'
 
 
@@ -74,8 +76,16 @@ async def sql_export(request):
     export_format = data.get('export_format')
     table = data.get('table')
 
-    if not export_format:
-        return web.json_response({'result': None, 'error': "Empty table"})
+    mime_types = {
+        'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'xls': 'application/vnd.ms-excel',
+
+        'csv': 'text/csv',
+        'json': 'application/json',
+    }
+
+    if not export_format or export_format not in ['markdown', 'xlsx', 'xls', 'csv', 'json']:
+        return web.json_response({'result': None, 'error': "Empty or incorrect format"})
 
     tablib_dataset = tablib.Dataset()
     tablib_dataset.headers = table['headers']
@@ -84,8 +94,16 @@ async def sql_export(request):
         row_values = list(map(row.get, table['headers']))
         tablib_dataset.append(row_values)
 
-    # if export_format == 'markdown':
-    return web.json_response({'result': str(tablib_dataset), 'error': None})
+    if export_format == 'markdown':
+        return web.json_response({'result': str(tablib_dataset), 'error': None})
+    else:
+        result = tablib_dataset.export(export_format)
+
+        return web.Response(
+            headers={'Content-Disposition': 'attachment; filename="data.%s' % export_format},
+            content_type=mime_types[export_format],
+            body=result
+        )
 
 
 async def get_delay(request):

@@ -166,8 +166,10 @@
                 <div class="button">Export</div>
 
                 <div class="export-options center-align">
-                    <div id="export-markdown">Markdown</div>
-                    <div id="export-excel">Excel</div>
+                    <div class="export-btn" data-export-format="markdown">Markdown</div>
+                    <div class="export-btn" data-export-format="xlsx">Excel</div>
+                    <div class="export-btn" data-export-format="csv">CSV</div>
+                    <div class="export-btn" data-export-format="json">JSON</div>
                 </div>
             </div>
         </div>
@@ -276,29 +278,45 @@
                 }
             });
 
-            $('#export-markdown').click(function() {
+            $('.export-btn').click(function() {
+
+                var exportFormat = $(this).data('exportFormat');
+
                 var ajax_data = {
-                    export_format: 'markdown',
+                    export_format: exportFormat,
                     table: currentDataTable,
                 }
 
-                $.ajax({
-                    url: '/export',
-                    type: 'POST',
-                    data: JSON.stringify(ajax_data),
-                    contentType: 'application/json; charset=utf-8',
-                    dataType: 'json'
-                })
-                    .done(function(data) {
-                        var markdownText = "<pre>" + data['result'] + "</pre>";
-                        var markdownWindow = window.open("about:blank", "markdown", "_blank");
-                        if(markdownWindow){
-                            markdownWindow.document.write(markdownText);
+                xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/export");
+                xhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+                // blob for binary responses
+                xhttp.responseType = exportFormat == 'markdown' ? 'json' : 'blob';
+                xhttp.send(JSON.stringify(ajax_data));
+
+                xhttp.onreadystatechange = function() {
+                    if (xhttp.readyState === 4 && xhttp.status === 200) {
+                        if(exportFormat == 'markdown' && !xhttp.response['error']){
+                            var markdownText = "<pre>" + xhttp.response['result'] + "</pre>";
+                            var markdownWindow = window.open("about:blank", "markdown", "_blank");
+                            if(markdownWindow){
+                                markdownWindow.document.write(markdownText);
+                            }
                         }
-                    })
-                    .fail(function(data) {
-                        Materialize.toast('Error!', 4000);
-                    });
+                        else{
+                            // Trick for making downloadable link
+                            var a;
+                            a = document.createElement('a');
+                            a.href = window.URL.createObjectURL(xhttp.response);
+                            // Give a filename
+                            a.download = "data." + exportFormat;
+                            a.style.display = 'none';
+                            document.body.appendChild(a);
+                            a.click();
+                        }
+                    }
+                };
+
             });
 
             $('.run-query-btn').click(function(e) {
