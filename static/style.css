@@ -1,4 +1,67 @@
 
+.main-content{
+    display: flex;
+    text-align: center;
+    max-width: 1320px;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.db-schema{
+    width: 320px;
+    vertical-align: top;
+    overflow-y: auto;
+    margin-left: 20px;
+    height: 425px;
+}
+
+.db-schema .collapsible{
+    margin: 0;
+}
+
+.db-schema .collapsible-body{
+    padding: 15px 0;
+    background-color: rgb(253, 253, 253);
+}
+
+.db-schema .collapsible-header > span{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.db-schema .collapsible-body > ul{
+    text-align: left;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.db-schema .collapsible-body > ul > li{
+    padding: 0 15px;
+    height: 24px;
+}
+
+.db-schema .collapsible-body > ul > li:hover{
+    background-color: #eee;
+    background: rgba(227,234,255,.5);
+}
+
+.db-schema .collapsible-body > ul > li > span{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    line-height: 24px;
+}
+.db-schema .collapsible-body > ul > li > span:first-child{
+    width: 70%;
+}
+
+.db-schema .collapsible-body > ul > li > span:last-child{
+    float: right !important;
+}
+
+
 .CodeMirror{
     border-radius: 5px;
 
@@ -115,11 +178,10 @@ body:not(.isloading) .export:hover .export-options{
 }
 
 .sql-editor{
-    /* max-width: 500px; */
     max-width: 1000px;
-    margin: auto;
-    margin-top: 100px;
     padding: 0 20px;
+    text-align: left;
+    width: 100%;
 }
 
 .sql-editor__header{
@@ -199,7 +261,10 @@ body.isloading .sql-editor .CodeMirror-hscrollbar{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 25px;
+
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 50px;
 }
 
 .example-list .card{
@@ -275,7 +340,7 @@ body:not(.isloading) .example-list .card:hover > .overlay{
     display: inline-block;
     padding: 0 20px 20px;
     width: 200px;
-    margin-top: 0;
+    margin: 0;
 }
 
 .limit-rows > .limit-rows__header{
@@ -288,5 +353,13 @@ body:not(.isloading) .example-list .card:hover > .overlay{
     height: 1.5rem;
     margin-bottom: 0;
 }
+
+@media(max-width: 800px){
+    .db-schema{
+        display: none;
+    }
+}
+
+
 
 

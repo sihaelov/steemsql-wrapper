@@ -35,27 +35,12 @@
 <body style="/*background: #f1f5f9; background-color: #e8ebef;*/
             background-color: rgb(250, 250, 250); margin-bottom: 100px;">
 
-    <div class="sql-editor">
-    
-        <div class="sql-editor__header">
-            <div class="sql-editor__info-text">
-                <p>Based on <a href="http://steemsql.com" target="_blank">SteemSQL</a></p>
-                <p>Developed by <a href="https://steemit.com/@emptyname" target="_blank">@emptyname</a></p>
-                <p><a href="https://www.w3schools.com/sql/default.asp" target="_blank">Learn SQL</a></p>
-                <p>Delay: <span id="delay">loading...</span></p>
-            </div>
+    <div class="main-content">
 
-            <div class="undo-redo right-align">
-                <i class="undo material-icons">&#xE166;</i> <!-- undo -->
-                <i class="redo material-icons">&#xE15A;</i> <!-- redo -->
-            </div>
-        </div>
 
-        <div class="input-field">
+        <div class="db-schema">
 
-            <textarea id="sqlarea" class="materialize-textarea"></textarea>
-
-            <div class="loader-wrapper valign-wrapper">
+            <div class="loader-wrapper">
                 <div class="preloader-wrapper big active">
                     <div class="spinner-layer spinner-blue-only">
                       <div class="circle-clipper left">
@@ -68,96 +53,137 @@
                     </div>
                 </div>
             </div>
+
+            <ul class="collapsible" data-collapsible="accordion" style="display: none;"></ul>
+
         </div>
 
-        <div class="sql-editor__footer">
-            <div class="card limit-rows">
-                <div class="limit-rows__header">
-                    <p>Limit Rows</p>
-                    <input type="number" min="1" max="5000" id="limit-rows-value" />
+
+        <div class="sql-editor">
+
+            <div class="sql-editor__header">
+                <div class="sql-editor__info-text">
+                    <p>Based on <a href="http://steemsql.com" target="_blank">SteemSQL</a></p>
+                    <p>Developed by <a href="https://steemit.com/@emptyname" target="_blank">@emptyname</a></p>
+                    <p><a href="https://www.w3schools.com/sql/default.asp" target="_blank">Learn SQL</a></p>
+                    <p>Delay: <span id="delay">loading...</span></p>
                 </div>
 
-                <div id="limit-rows-slider"></div>
+                <div class="undo-redo right-align">
+                    <i class="undo material-icons">&#xE166;</i> <!-- undo -->
+                    <i class="redo material-icons">&#xE15A;</i> <!-- redo -->
+                </div>
             </div>
 
-            <div>
-                <a href="#" class="run-query-btn button">Run Query</a>
+            <div class="input-field">
+
+                <textarea id="sqlarea" class="materialize-textarea"></textarea>
+
+                <div class="loader-wrapper valign-wrapper">
+                    <div class="preloader-wrapper big active">
+                        <div class="spinner-layer spinner-blue-only">
+                          <div class="circle-clipper left">
+                            <div class="circle"></div>
+                          </div><div class="gap-patch">
+                            <div class="circle"></div>
+                          </div><div class="circle-clipper right">
+                            <div class="circle"></div>
+                          </div>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <div class="sql-editor__footer">
+                <div class="card limit-rows">
+                    <div class="limit-rows__header">
+                        <p>Limit Rows</p>
+                        <input type="number" min="1" max="5000" id="limit-rows-value" />
+                    </div>
+
+                    <div id="limit-rows-slider"></div>
+                </div>
+
+                <div>
+                    <a href="#" class="run-query-btn button">Run Query</a>
+                </div>
+            </div>
+
+        </div> <!-- sql-editor -->
+    </div> <!-- main-content -->
+
+
+    <div class="example-list">
+    
+        <div class="card valign-wrapper orange lighten-1">
+            <p class="title">
+                Тоp 30 posts by number of upvotes
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, net_votes, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY net_votes DESC"></p>
         </div>
 
-        <div class="example-list">
-        
-            <div class="card valign-wrapper orange lighten-1">
-                <p class="title">
-                    Тоp 30 posts by number of upvotes
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, net_votes, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY net_votes DESC"></p>
-            </div>
+        <div class="card valign-wrapper deep-orange lighten-1">
+            <p class="title">
+                Top 30 posts by number of comments
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, children, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY children DESC"></p>
+        </div>
 
-            <div class="card valign-wrapper deep-orange lighten-1">
-                <p class="title">
-                    Top 30 posts by number of comments
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, children, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY children DESC"></p>
-            </div>
+        <div class="card valign-wrapper green lighten-1">
+            <p class="title">
+                Top 30 posts by pending payout
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, pending_payout_value, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY pending_payout_value DESC"></p>
+        </div>
 
-            <div class="card valign-wrapper green lighten-1">
-                <p class="title">
-                    Top 30 posts by pending payout
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, pending_payout_value, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY pending_payout_value DESC"></p>
-            </div>
+        <div class="card valign-wrapper blue lighten-1">
+            <p class="title">
+                Daily number of posts
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT CONVERT(DATE, created) as Date, COUNT(*) as Posts&#10;FROM Comments&#10;WHERE created >= '${dateWeekAgo}' AND created < '${date}'&#10;GROUP BY CONVERT(DATE, created)&#10;ORDER BY CONVERT(DATE, created) DESC"></p>
 
-            <div class="card valign-wrapper blue lighten-1">
-                <p class="title">
-                    Daily number of posts
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-            
-                <p class="raw-sql" sql="SELECT CONVERT(DATE, created) as Date, COUNT(*) as Posts&#10;FROM Comments&#10;WHERE created >= '${dateWeekAgo}' AND created < '${date}'&#10;GROUP BY CONVERT(DATE, created)&#10;ORDER BY CONVERT(DATE, created) DESC"></p>
+        </div>
 
-            </div>
+        <div class="card valign-wrapper purple lighten-1">
+            <p class="title">
+                Daily number of new accounts
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as [New Accounts]&#10;FROM TxAccountCreates&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
+        </div>
 
-            <div class="card valign-wrapper purple lighten-1">
-                <p class="title">
-                    Daily number of new accounts
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as [New Accounts]&#10;FROM TxAccountCreates&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
-            </div>
+        <div class="card valign-wrapper indigo lighten-1">
+            <p class="title">
+                Daily number of votes
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as Votes&#10;FROM TxVotes&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
+        </div>
 
-            <div class="card valign-wrapper indigo lighten-1">
-                <p class="title">
-                    Daily number of votes
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as Votes&#10;FROM TxVotes&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
-            </div>
+        <div class="card valign-wrapper red lighten-1">
+            <p class="title">
+                Top 50 utopian contributors by pending payout
+            </p>
+            <div class="overlay valign-wrapper"><p>See query</p></div>
+            <p class="raw-sql" sql="SELECT TOP 50 author, SUM(pending_payout_value) as [Pending Payout]&#10;FROM Comments&#10;WHERE&#10;    parent_author='' AND&#10;    created >= '${dateWeekAgo}' AND&#10;    created < '${date}' AND&#10;    category='utopian-io'&#10;GROUP BY author&#10;ORDER BY SUM(pending_payout_value) DESC"></p>
+        </div>
 
-            <div class="card valign-wrapper red lighten-1">
-                <p class="title">
-                    Top 50 utopian contributors by pending payout
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 50 author, SUM(pending_payout_value) as [Pending Payout]&#10;FROM Comments&#10;WHERE&#10;    parent_author='' AND&#10;    created >= '${dateWeekAgo}' AND&#10;    created < '${date}' AND&#10;    category='utopian-io'&#10;GROUP BY author&#10;ORDER BY SUM(pending_payout_value) DESC"></p>
-            </div>
+        <!--
+            SELECT * FROM sys.views
+            select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='tableName'
 
-            <!--
-                SELECT * FROM sys.views
-                select * from INFORMATION_SCHEMA.COLUMNS where TABLE_NAME='tableName'
-            
-                SELECT CONVERT(DATE, created), SUM(net_votes)
-                FROM Comments
-                WHERE created >= '2017/12/06' AND created < '2017/12/07'
-                GROUP BY CONVERT(DATE, created)
-                ORDER BY CONVERT(DATE, created)
-            -->
+            SELECT CONVERT(DATE, created), SUM(net_votes)
+            FROM Comments
+            WHERE created >= '2017/12/06' AND created < '2017/12/07'
+            GROUP BY CONVERT(DATE, created)
+            ORDER BY CONVERT(DATE, created)
+        -->
 
-        </div> <!--/.example-list -->
-    </div>
+    </div> <!--/.example-list -->
 
     <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;">
         
@@ -205,6 +231,41 @@
                 mode: 'text/x-mssql',
                 // indentWithTabs: true,
                 lineNumbers: true,
+            });
+
+            var dbSchemaBase = ' \
+                <li> \
+                    <div class="collapsible-header"><span title="{tableName}">{tableName}</span></div> \
+                    <div class="collapsible-body"> \
+                       <ul></ul> \
+                    </div> \
+                </li> \
+            ';
+
+            $.getJSON("/static/dbschema.min.json", function(data) {
+
+                data['tables'].forEach(function(tableName) {
+
+                    var $dbTable = $(dbSchemaBase.replace(/{tableName}/g, tableName));
+
+                    data['rows'].forEach(function(row) {
+                        if(row['tableName'] == tableName){
+
+                            var $dbColumn = $('<li></li>');
+
+                            var $columnName = $('<span>' + row.columnName + '</span>');
+                            $columnName.attr('title', row.columnName);
+
+                            $dbColumn.append($columnName);
+                            $dbColumn.append($('<span>' + row.dataType + '</span>'));
+                            $dbTable.find('.collapsible-body > ul').append($dbColumn);
+                        }
+                    });
+
+                    $('.db-schema > .loader-wrapper').hide();
+                    $('.db-schema > .collapsible').show();
+                    $('.collapsible').append($dbTable);
+                });
             });
 
             $.get('/delay', function(data) {
