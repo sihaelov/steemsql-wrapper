@@ -8,7 +8,6 @@ try:
 except ModuleNotFoundError:
     import pypyodbc as pyodbc
 
-import steem
 import tablib
 
 import os
@@ -107,20 +106,14 @@ async def sql_export(request):
 
 
 async def get_delay(request):
-    blockchain = steem.blockchain.Blockchain()
-    steemd = steem.steemd.Steemd()
 
     sql_query = "SELECT TOP 1 timestamp FROM Blocks ORDER BY block_num DESC"
     with pyodbc.connect(db_url, timeout=60) as connection:
         cursor = connection.cursor()
-        steemsql_last_date = cursor.execute(sql_query).fetchone()[0]
+        steemsql_last_time = cursor.execute(sql_query).fetchone()[0]
 
-    current_block_num = blockchain.get_current_block_num()
-    current_block = steemd.get_block_header(current_block_num)
-    blockchain_last_date = datetime.strptime(current_block['timestamp'],
-                                             "%Y-%m-%dT%H:%M:%S")
-
-    delay = blockchain_last_date - steemsql_last_date
+    current_time = datetime.utcnow()
+    delay = current_time - steemsql_last_time
 
     return web.json_response({'delay_seconds': round(delay.total_seconds())})
 
