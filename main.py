@@ -45,6 +45,7 @@ async def api_run_sql(request):
         return web.json_response({'headers': [], 'rows': [],
                                   'error': "Empty query"})
 
+    start_time = datetime.now()
     with pyodbc.connect(db_url, timeout=60) as connection:
         cursor = connection.cursor()
         # connection.setdecoding(pyodbc.SQL_CHAR, encoding='utf-8')
@@ -62,11 +63,15 @@ async def api_run_sql(request):
             print('Error')
             error = str(e)
             headers = []
+    end_time = datetime.now()
+    execution_time_raw = end_time - start_time
+    execution_time = round(execution_time_raw.total_seconds())
 
     return web.json_response({
                               'headers': headers,
                               'rows': rows,
-                              'error': error
+                              'error': error,
+                              'execution_time': execution_time
                         }, dumps=functools.partial(json.dumps, default=str))
 
 
