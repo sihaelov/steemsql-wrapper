@@ -185,9 +185,18 @@
 
     </div> <!--/.example-list -->
 
-    <div id="table" style="max-width: 1000px; margin: auto; margin-top: 100px;">
+    <div id="table">
         
-        <div class="export-wrapper" style="display: none;">
+        <div class="table__header" style="display: none;">
+
+            <div class="card execution_time">
+                <div class="card-content">
+                    <p class="card-title">
+                        Execution time: <span id="execution_time__value"></span>
+                    </p>
+                </div>
+            </div>
+
             <div class="export">
                 <div class="button">Export</div>
 
@@ -408,6 +417,7 @@
                     .done(function(data) {
                         var headers = data['headers'];
                         var rows = data['rows'];
+                        var executionTime = data['execution_time'];
 
                         if(data['error']){
                             $('body').removeClass('isloading');
@@ -439,7 +449,15 @@
                             $('table > tbody').append($tableRow);
                         });
 
-                        $('.export-wrapper').css('display', 'block');
+                        if(executionTime > 60){
+                            var minutes = Math.floor(executionTime / 60);
+                            var seconds = executionTime - minutes * 60;
+                            $('#execution_time__value').text(minutes + 'm ' + seconds + 's');
+                        }
+                        else{
+                            $('#execution_time__value').text(executionTime + 's');
+                        }
+                        $('.table__header').css('display', 'block');
                         currentDataTable = data;
 
                         $('body').removeClass('isloading');

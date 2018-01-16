@@ -122,9 +122,35 @@ body.isloading .sql-editor .run-query-btn{
     background-color: #007e8ed1;
 }
 
-.export-wrapper{
+#table{
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.table__header{
     height: 50px;
     position: relative;
+    margin-bottom: 20px;
+}
+
+.table__header .card.execution_time{
+    float: left;
+    height: 42px;
+    margin: 0;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+
+.table__header .card.execution_time .card-content{
+    text-align: center;
+    padding: 0 10px;
+}
+
+.table__header .card.execution_time .card-content .card-title{
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 42px;
 }
 
 .export{
