@@ -1,3 +1,18 @@
+function getQuerystringVariable(variable, _default)
+{
+  var query = window.location.search.substring(1);
+  var vars = query.split("&");
+  for (var i=0; i<vars.length; i++) {
+    var pair = vars[i].split("=");
+    if(pair[0] == variable){
+      return pair[1];
+    }
+  }
+  return _default;
+}
+
+
+
 $(window).on('load', function(){
 
     var currentDataTable;
@@ -8,6 +23,20 @@ $(window).on('load', function(){
         // indentWithTabs: true,
         lineNumbers: true,
     });
+
+    var updateUrlState = function() {
+        var query = editor.getDoc().getValue();
+        var url = window.location.origin + '?sql_query=' + encodeURIComponent(query);
+        if (url != window.location.href) {
+            window.history.pushState({}, "", url);
+        }
+        return url;
+    }
+
+    var sql_query = decodeURIComponent(getQuerystringVariable('sql_query', ''));
+    editor.getDoc().setValue(sql_query);
+
+
 
     var dbSchemaBase = ' \
         <li> \
@@ -93,6 +122,31 @@ $(window).on('load', function(){
         }
     });
 
+    $('#share-query').click(function(){
+        // https://stackoverflow.com/questions/400212/how-do-i-copy-to-the-clipboard-in-javascript
+        var textArea = document.createElement("textarea");
+
+        textArea.style.position = 'fixed';
+        textArea.style.top = 0;
+        textArea.style.left = 0;
+        textArea.style.width = '2em';
+        textArea.style.height = '2em';
+        textArea.style.padding = 0;
+        textArea.style.border = 'none';
+        textArea.style.outline = 'none';
+        textArea.style.boxShadow = 'none';
+        textArea.style.background = 'transparent';
+        textArea.value = updateUrlState();
+
+        document.body.appendChild(textArea);
+
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        Materialize.toast('Copied to clipboard!', 4000);
+    })
+
 
     $('.example-list > .card').click(function() {
         if( !$('body').hasClass('isloading')){
@@ -167,6 +221,7 @@ $(window).on('load', function(){
             return;
         }
 
+        updateUrlState();
         $('body').addClass('isloading');
 
         var ajax_data = {
