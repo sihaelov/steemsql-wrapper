@@ -12,7 +12,7 @@
     vertical-align: top;
     overflow-y: auto;
     margin-left: 20px;
-    height: 425px;
+    height: 447px;
 }
 
 .db-schema .collapsible{
@@ -216,6 +216,10 @@ body:not(.isloading) .export:hover .export-options{
     justify-content: space-between;
 }
 
+.sql-editor__note{
+    margin: 0;
+}
+
 .sql-editor__info-text{
     opacity: 0.8;
     display: flex;
@@ -230,6 +234,10 @@ body:not(.isloading) .export:hover .export-options{
 }
 
 @media screen and (max-width: 450px) {
+    .sql-editor__note{
+        text-align: center;
+    }
+
     .sql-editor__info-text > p{
         display: block;
         margin: 5px 0;

@@ -62,6 +62,9 @@ $(window).on('load', function(){
 
     var getEncodedUrl = function() {
         var query = editor.getDoc().getValue();
+        if(!query){
+            return;
+        }
         return window.location.origin + '?sql_query=' + encodeURIComponent(query);
     }
 
@@ -159,7 +162,7 @@ $(window).on('load', function(){
         if (calculateByteLength(url)>=8190) {
             Materialize.toast('ERROR: Query length not supported yet.', 4000, 'red')
         }
-        else {
+        else if(url){
             if (url != window.location.href) {
                 window.history.pushState({}, "", url);
             }
