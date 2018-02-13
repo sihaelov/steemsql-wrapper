@@ -25,6 +25,7 @@ cors = aiohttp_cors.setup(app, defaults={
         "https://steemrank.steemhelpers.com":  cors_options,
         "https://steemlyt.steemhelpers.com":  cors_options,
         "https://sql.steemhelpers.com":  cors_options,
+        "http://127.0.0.1:8080":  cors_options,
     })
 
 for route in list(app.router.routes()):
