@@ -1,127 +1,422 @@
 <template>
   <div id="app">
-    <div class="main-content">
-
-        <div class="db-schema">
-            <div class="loader-wrapper">
-                <div class="preloader-wrapper big active">
-                    <div class="spinner-layer spinner-blue-only">
-                      <div class="circle-clipper left">
-                        <div class="circle"></div>
-                      </div><div class="gap-patch">
-                        <div class="circle"></div>
-                      </div><div class="circle-clipper right">
-                        <div class="circle"></div>
-                      </div>
-                    </div>
-                </div>
-            </div>
-
-            <ul class="collapsible" data-collapsible="accordion" style="display: none;"></ul>
-        </div>
-
-        <div class="example-list">
-    
-          <div class="card valign-wrapper orange lighten-1">
-              <p class="title">
-                  Тоp 30 posts by number of upvotes
-              </p>
-              <div class="overlay valign-wrapper"><p>See query</p></div>
-              <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, net_votes, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY net_votes DESC"></p>
-          </div>
-
-            <div class="card valign-wrapper deep-orange lighten-1">
-                <p class="title">
-                    Top 30 posts by number of comments
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, children, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY children DESC"></p>
-            </div>
-
-            <div class="card valign-wrapper green lighten-1">
-                <p class="title">
-                    Top 30 posts by pending payout
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 30&#10;author, category, pending_payout_value, title, url&#10;FROM Comments&#10;WHERE parent_author='' AND created >= '${date}' AND created < '${nextDate}'&#10;ORDER BY pending_payout_value DESC"></p>
-            </div>
-
-            <div class="card valign-wrapper blue lighten-1">
-                <p class="title">
-                    Daily number of posts
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT CONVERT(DATE, created) as Date, COUNT(*) as Posts&#10;FROM Comments&#10;WHERE created >= '${dateWeekAgo}' AND created < '${date}'&#10;GROUP BY CONVERT(DATE, created)&#10;ORDER BY CONVERT(DATE, created) DESC"></p>
-
-            </div>
-
-            <div class="card valign-wrapper purple lighten-1">
-                <p class="title">
-                    Daily number of new accounts
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as [New Accounts]&#10;FROM TxAccountCreates&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
-            </div>
-
-            <div class="card valign-wrapper indigo lighten-1">
-                <p class="title">
-                    Daily number of votes
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT CONVERT(DATE, timestamp) as Date, COUNT(*) as Votes&#10;FROM TxVotes&#10;WHERE timestamp >= '${dateWeekAgo}' AND timestamp < '${date}'&#10;GROUP BY CONVERT(DATE, timestamp)&#10;ORDER BY CONVERT(DATE, timestamp) DESC"></p>
-            </div>
-
-            <div class="card valign-wrapper red lighten-1">
-                <p class="title">
-                    Top 50 utopian contributors by pending payout
-                </p>
-                <div class="overlay valign-wrapper"><p>See query</p></div>
-                <p class="raw-sql" sql="SELECT TOP 50 author, SUM(pending_payout_value) as [Pending Payout]&#10;FROM Comments&#10;WHERE&#10;    parent_author='' AND&#10;    created >= '${dateWeekAgo}' AND&#10;    created < '${date}' AND&#10;    category='utopian-io'&#10;GROUP BY author&#10;ORDER BY SUM(pending_payout_value) DESC"></p>
-            </div>
-
-          </div> <!--/.example-list -->
-
-        
-    </div> <!-- main-content -->
+    <!-- navbar -->
+    <router-view/>
   </div>
 </template>
 
 <script>
+
 export default {
-  name: 'app',
-  data () {
-    return {
-      msg: ''
-    }
-  }
-}
+  name: 'App',
+};
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+body{
+    /*
+    background: #f1f5f9;
+    background-color: #e8ebef;
+    */
+    background-color: rgb(250, 250, 250);
+    margin-bottom: 100px;
 }
 
-h1, h2 {
-  font-weight: normal;
+.main-content{
+    display: flex;
+    text-align: center;
+    max-width: 1320px;
+    margin: auto;
+    margin-top: 100px;
 }
 
-ul {
-  list-style-type: none;
-  padding: 0;
+.db-schema{
+    width: 320px;
+    vertical-align: top;
+    overflow-y: auto;
+    margin-left: 20px;
+    height: 447px;
 }
 
-li {
-  display: inline-block;
-  margin: 0 10px;
+.db-schema .collapsible{
+    margin: 0;
 }
 
-a {
-  color: #42b983;
+.db-schema .collapsible-body{
+    padding: 15px 0;
+    background-color: rgb(253, 253, 253);
 }
+
+.db-schema .collapsible-header > span{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.db-schema .collapsible-body > ul{
+    text-align: left;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.db-schema .collapsible-body > ul > li{
+    padding: 0 15px;
+    height: 24px;
+}
+
+.db-schema .collapsible-body > ul > li:hover{
+    background-color: #eee;
+    background: rgba(227,234,255,.5);
+}
+
+.db-schema .collapsible-body > ul > li > span{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    line-height: 24px;
+}
+.db-schema .collapsible-body > ul > li > span:first-child{
+    width: 70%;
+}
+
+.db-schema .collapsible-body > ul > li > span:last-child{
+    float: right !important;
+}
+
+
+.CodeMirror{
+    border-radius: 5px;
+
+    /* z-depth-3 */
+    box-shadow: 0 6px 10px 0 rgba(0,0,0,0.14), 0 1px 18px 0 rgba(0,0,0,0.12),
+                0 3px 5px -1px rgba(0,0,0,0.3);
+}
+
+.CodeMirror-gutters{
+    background-color: #fff;
+    border: none;
+}
+
+.CodeMirror-linenumber{
+    min-width: 10px;
+
+    /* font-size: 10px; */
+    /* Line-height = code's font-size */
+    /* line-height: 15px; */
+
+    font-size: 13px;
+    line-height: 22px;
+}
+
+/* .CodeMirror pre.CodeMirror-placeholder { color: #999; } */
+
+
+.button{
+    background-color: #00bcd4;
+    color: rgba(255,255,255,.9);
+
+    /* box-shadow: 0px 3px 15px 0 #47b4b8; */
+    box-shadow: 3px 2px 15px 0 #47b4b8;
+
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    display: inline-block;
+
+    /* transition: box-shadow .3s,background-color .3s; */
+    transition: .1s;
+}
+
+.button:hover{
+    cursor: pointer;
+}
+
+body.isloading .button,
+.run-query-btn:hover{
+    /* box-shadow: 0 10px 92px 0 #73c6c9; */
+
+    transform: translateY(-1px);
+    background-color: #00bcd4d1;
+
+    /* box-shadow: 3px 2px 20px 0 #47b4b8; */
+    box-shadow: 3px 2px 5px 0 #47b4b8;
+}
+body.isloading .sql-editor .run-query-btn{
+    background-color: #007e8ed1;
+}
+
+#table{
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 100px;
+}
+
+.table__header{
+    height: 50px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.table__header .card.execution_time{
+    float: left;
+    height: 42px;
+    margin: 0;
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+}
+
+.table__header .card.execution_time .card-content{
+    text-align: center;
+    padding: 0 10px;
+}
+
+.table__header .card.execution_time .card-content .card-title{
+    margin: 0;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 42px;
+}
+
+.export{
+    position: absolute;
+    right: 0;
+    z-index: 2;
+    transition: .15s;
+}
+
+.export .button{
+    padding: 10px 30px;
+}
+
+body:not(.isloading) .export:hover{
+    box-shadow: 3px 2px 5px 0 #47b4b8;
+}
+
+body:not(.isloading) .export:hover .button{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: none;
+    background-color: #00bcd4d1;
+}
+
+.export .export-options{
+    background: #fff;
+    opacity: 0.1;
+    visibility: hidden;
+    height: 0;
+    transition: .15s;
+}
+
+body:not(.isloading) .export:hover .export-options{
+    height: 100%;
+    opacity: 1;
+    visibility: visible;
+}
+
+.export .export-options > div{
+    /* padding: 10px 20px; */
+    padding: 10px 0;
+}
+
+.export .export-options > div{
+    border-bottom: 1px solid #eee;
+}
+
+.export .export-options > div:hover{
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.sql-editor{
+    max-width: 1000px;
+    padding: 0 20px;
+    text-align: left;
+    width: 100%;
+}
+
+.sql-editor__header{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.sql-editor__note{
+    margin: 0;
+}
+
+.sql-editor__info-text{
+    opacity: 0.8;
+    display: flex;
+}
+.sql-editor__info-text > p{
+    display: inline-block;
+    margin: 0;
+}
+.sql-editor__info-text > p:not(:last-child):after{
+    content: '|';
+    margin: 0 7px;
+}
+
+@media screen and (max-width: 450px) {
+    .sql-editor__note{
+        text-align: center;
+    }
+
+    .sql-editor__info-text > p{
+        display: block;
+        margin: 5px 0;
+    }
+    .sql-editor__info-text{
+        display: block;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .sql-editor__header{
+        display: block;
+    }
+
+    .sql-editor__info-text > p:not(:last-child):after{
+        display: none;
+    }
+}
+
+.sql-editor .undo-redo i{
+    color: rgba(0, 0, 0, 0.6);
+}
+body:not(.isloading) .sql-editor .undo-redo i:hover{
+    background-color: #eee;
+    cursor: pointer;
+}
+
+.sql-editor .input-field{
+    margin-top: 0;
+}
+
+.sql-editor .loader-wrapper{
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    background: rgba(0, 0, 0, 0.6);
+    /* opacity: 0.5; */
+    z-index: 5;
+
+    display: none;
+}
+.sql-editor .loader-wrapper > .preloader-wrapper{
+    margin: auto;
+}
+
+body.isloading .sql-editor .loader-wrapper{
+    display: flex;
+}
+body.isloading .sql-editor .CodeMirror-hscrollbar{
+    display: none !important;
+}
+
+.example-list{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    max-width: 1000px;
+    margin: auto;
+    margin-top: 50px;
+}
+
+.example-list .card{
+    position: relative;
+    width: 200px;
+    padding: 0 10px;
+    height: 120px;
+
+    border-radius: 7px;
+    margin-right: 20px;
+    text-align: center;
+
+    /* font-weight: 600; */
+    font-size: 16px;
+    line-height: 1.7;
+    color: #fff;
+    font-family: Space Mono, monospace;
+    /* text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+
+    box-shadow: 3px 5px 20px rgba(0,0,0,.22);
+    transition: 0.1s;
+}
+
+.example-list .card > .overlay{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 7px; /* from .card*/
+
+    visibility: hidden;
+    opacity: 0;
+    transition: 0.3s;
+}
+.example-list .card > .overlay > p{
+    margin: auto;
+
+    border-radius: 20px;
+    padding: 5px 20px;
+
+    /* from .run-query-btn */
+    background-color: #00bcd4;
+    /* border-radius: 5px; */
+    text-transform: uppercase;
+}
+
+.example-list .card > p.raw-sql{
+    display: none;
+}
+
+body:not(.isloading) .example-list .card:hover{
+    transform: translateY(-1px);
+    /* box-shadow: 3px 5px 10px rgba(0,0,0,.22); */
+    box-shadow: 3px 2px 5px rgba(0,0,0,.22);
+    cursor: pointer;
+}
+body:not(.isloading) .example-list .card:hover > .overlay{
+    visibility: visible;
+    opacity: 1;
+}
+
+
+.sql-editor__footer{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-top: 20px;
+}
+
+.limit-rows{
+    display: inline-block;
+    padding: 0 20px 20px;
+    width: 200px;
+    margin: 0;
+}
+
+.limit-rows > .limit-rows__header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.limit-rows > .limit-rows__header > input{
+    width: 50px;
+    height: 1.5rem;
+    margin-bottom: 0;
+}
+
+@media(max-width: 800px){
+    .db-schema{
+        display: none;
+    }
+}
+
 </style>
