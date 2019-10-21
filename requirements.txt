@@ -10,7 +10,7 @@ chardet==3.0.4
 dateparser==0.6.0
 diff-match-patch==20121119
 docopt==0.6.2
-ecdsa==0.13
+ecdsa==0.13.3
 et-xmlfile==1.0.1
 funcy==1.9.1
 humanize==0.5.1
