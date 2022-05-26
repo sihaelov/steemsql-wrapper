@@ -47,7 +47,7 @@ toml==0.9.3
 toolz==0.8.2
 typing==3.6.2
 tzlocal==1.4
-ujson==1.35
+ujson==5.2.0
 unicodecsv==0.14.1
 urllib3==1.22
 voluptuous==0.10.5
